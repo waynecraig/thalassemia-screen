@@ -12,48 +12,52 @@ from sklearn.metrics import (
     roc_auc_score,
 )
 import seaborn as sns
-from utils import get_data, get_metrics, get_data_3
+from utils import get_data, get_metrics, get_data_3, get_data_4, get_data_5, get_data_6
 
 paths = [
     "./data/select/s.csv",
     "./data/select/s-0.csv",
     "./data/select/s-1.csv",
-    "./data/select/s-0-2.csv",
-    "./data/select/s-1-2.csv",
-    "./data/select/s-0-0.csv",
-    "./data/select/s-1-0.csv",
-    "./data/select/s-0-1.csv",
-    "./data/select/s-1-1.csv",
-    "./data/select/s-0-3.csv",
-    "./data/select/s-1-3.csv",
-    "./data/select/s-2-0.csv",
-    "./data/select/s-2-1.csv",
+    # "./data/select/s-0-2.csv",
+    # "./data/select/s-1-2.csv",
+    # "./data/select/s-0-0.csv",
+    # "./data/select/s-1-0.csv",
+    # "./data/select/s-0-1.csv",
+    # "./data/select/s-1-1.csv",
+    # "./data/select/s-2-3.csv",
+    # "./data/select/s-0-3.csv",
+    # "./data/select/s-1-3.csv",
+    # "./data/select/s-2-0.csv",
+    # "./data/select/s-2-1.csv",
+    # "./data/select/m8.csv",
+    # "./data/select/m8_1.csv",
+    # "./data/select/m8_2.csv",
 ]
 
 models = [
-    # (
-    #     "lr",
-    #     "Logistic Regression",
-    # ),
-    # (
-    #     "svm",
-    #     "Support Vector Machine",
-    # ),
-    # (
-    #     "rf",
-    #     "Random Forest",
-    # ),
-    # (
-    #     "gbm",
-    #     "Gradient Boosting Machine",
-    # ),
-    # (
-    #     "voting",
-    #     "Voting Classifier",
-    # ),
+    (
+        "lr",
+        "Logistic Regression",
+    ),
+    (
+        "svm",
+        "Support Vector Machine",
+    ),
+    (
+        "rf",
+        "Random Forest",
+    ),
+    (
+        "gbm",
+        "Gradient Boosting Machine",
+    ),
     (
         "mlp",
         "Multi-layer Perceptron",
+    ),
+    (
+        "voting",
+        "Voting Classifier",
     ),
 ]
 
@@ -69,18 +73,28 @@ def get_classifiers(label):
         return RandomForestClassifier(
             criterion="entropy", n_estimators=10, random_state=71
         )
+    elif label == "mlp":
+        return MLPClassifier(
+            hidden_layer_sizes=(100,), activation="relu", solver="lbfgs", max_iter=5000
+        )
     elif label == "voting":
         return VotingClassifier(
             estimators=[
                 ("lr", LogisticRegression(C=100.0, random_state=71, max_iter=500)),
                 ("svm", SVC(kernel="rbf", random_state=71, probability=True)),
                 ("gbm", GradientBoostingClassifier()),
+                ("rf", RandomForestClassifier(criterion="entropy", random_state=71)),
+                (
+                    "mlp",
+                    MLPClassifier(
+                        hidden_layer_sizes=(100,),
+                        activation="relu",
+                        solver="lbfgs",
+                        max_iter=5000,
+                    ),
+                ),
             ],
             voting="soft",
-        )
-    elif label == "mlp":
-        return MLPClassifier(
-            hidden_layer_sizes=(100,), activation="relu", solver="lbfgs", max_iter=5000
         )
 
 
@@ -115,6 +129,14 @@ def get_data_name(filename):
         return "MCV<=80"
     elif filename == "s-2-3":
         return "MCV>80"
+    elif filename == "m8":
+        return "MCV>80"
+    elif filename == "m8_1":
+        return "MCV>80 HGB<120"
+    elif filename == "m8_2":
+        return "MCV>80 HGB>=120"
+    elif filename == "s-2-3":
+        return "MCV>80"
 
 
 result = pd.DataFrame(
@@ -134,7 +156,7 @@ result = pd.DataFrame(
 
 for path in paths:
     for model in models:
-        X, X_train_std, X_test_std, y_train, y_test = get_data(path)
+        X, X_train_std, X_test_std, y_train, y_test = get_data_6(path)
         filename = os.path.splitext(os.path.basename(path))[0]
 
         classifier = get_classifiers(model[0])
@@ -193,4 +215,4 @@ for path in paths:
         result = pd.concat([result, row], ignore_index=True)
 
 
-result.to_csv("./data/result/s.csv", index=False)
+result.to_csv("./data/result/m.csv", index=False)

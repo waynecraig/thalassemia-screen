@@ -20,6 +20,9 @@ def alignColumnNames(df):
             "HBG": "HGB",
             "HCT（0.35-0.45）": "HCT",
             "HCT(0.35-0.45)": "HCT",
+            "α-地中海贫血基因（点突变型）": "alpha-1",
+            "α-地中海贫血基因（缺失型）": "alpha-2",
+            "β-地中海贫血基因": "beta",
         },
         inplace=True,
     )
@@ -101,6 +104,11 @@ df_n_2 = pd.read_csv("./data/origin/normal-2.csv")
 df_n_3 = pd.read_csv("./data/origin/normal-3.csv")
 df_n_bc = pd.read_csv("./data/origin/normal-body-check.csv")
 df_n_p = pd.read_csv("./data/origin/normal-patient.csv")
+df_m8_1 = pd.read_csv("./data/origin/m8_train/总MCV>80,HBG<120-Table 1.csv")
+df_m8_2 = pd.read_csv("./data/origin/m8_train/总MCV>80,HBG>-120-Table 1.csv")
+df_m8_3 = pd.read_csv("./data/origin/m8_test/总MCV>80,HBG<120-Table 1.csv")
+df_m8_4 = pd.read_csv("./data/origin/m8_test/总MCV>80,HBG>=120-Table 1.csv")
+df_j = pd.read_csv("./data/origin/j-0728.csv")
 
 d1 = preprocess(df_new_1)
 d2 = preprocess(df_new_2)
@@ -110,8 +118,15 @@ d5 = preprocess(df_n_2)
 d6 = preprocess(df_n_3)
 d7 = preprocess(df_n_bc)
 d8 = preprocess(df_n_p)
+d9 = preprocess(df_m8_1)
+d10 = preprocess(df_m8_2)
+d11 = preprocess(df_m8_3)
+d12 = preprocess(df_m8_4)
+d13 = preprocess(df_j)
 
-d = pd.concat([d1, d2, d3, d4, d5, d6, d7, d8], axis=0).reset_index(drop=True)
+d = pd.concat([d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13], axis=0).reset_index(
+    drop=True
+)
 
 print(d.shape)
 
@@ -133,3 +148,9 @@ gs = d.groupby("Sex")
 for name, group in gs:
     group.to_csv(f"./data/select/s-{name:.0f}.csv", index=False)
     print(f"{name:.0f}: {np.bincount(group['label'].values)}")
+
+gs = d.groupby("label-2")
+
+for name, group in gs:
+    group.to_csv(f"./data/select/s-2-{name}.csv", index=False)
+    print(f"{name}: {np.bincount(group['label'].values)}")

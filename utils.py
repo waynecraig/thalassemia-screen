@@ -8,6 +8,8 @@ from sklearn.metrics import (
     f1_score,
     cohen_kappa_score,
 )
+from imblearn.over_sampling import SMOTE, RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
 
 
 def get_data(path):
@@ -48,7 +50,7 @@ def get_data(path):
     X_train_std = sc.transform(X_train)
     X_test_std = sc.transform(X_test)
 
-    return X, X_train_std, X_test_std, y_train, y_test
+    return X, y, X_train_std, X_test_std, y_train, y_test
 
 
 def get_data_2(path):
@@ -133,6 +135,126 @@ def get_data_3(path):
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=37, stratify=y
     )
+
+    sc = StandardScaler()
+    sc.fit(X_train)
+    X_train_std = sc.transform(X_train)
+    X_test_std = sc.transform(X_test)
+
+    return X, X_train_std, X_test_std, y_train, y_test
+
+
+def get_data_4(path):
+    df = pd.read_csv(path)
+
+    X = df[
+        [
+            "RBC",
+            "RDW-CV",
+            "RDW-SD",
+            "MCV",
+            "MCH",
+            "MCHC",
+            "HCT",
+            "HGB",
+            "RDW-CV/RBC",
+            "RDW-SD/RBC",
+            "MCV/RBC",
+            "MCH/RBC",
+            "MCHC/RBC",
+            "HCT/RBC",
+            "HGB/RBC",
+        ]
+    ]
+
+    y = df["label"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=37, stratify=y
+    )
+
+    oversample = SMOTE()
+    X_train, y_train = oversample.fit_resample(X_train, y_train)
+
+    sc = StandardScaler()
+    sc.fit(X_train)
+    X_train_std = sc.transform(X_train)
+    X_test_std = sc.transform(X_test)
+
+    return X, X_train_std, X_test_std, y_train, y_test
+
+
+def get_data_5(path):
+    df = pd.read_csv(path)
+
+    X = df[
+        [
+            "RBC",
+            "RDW-CV",
+            "RDW-SD",
+            "MCV",
+            "MCH",
+            "MCHC",
+            "HCT",
+            "HGB",
+            "RDW-CV/RBC",
+            "RDW-SD/RBC",
+            "MCV/RBC",
+            "MCH/RBC",
+            "MCHC/RBC",
+            "HCT/RBC",
+            "HGB/RBC",
+        ]
+    ]
+
+    y = df["label"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=37, stratify=y
+    )
+
+    oversample = RandomOverSampler()
+    X_train, y_train = oversample.fit_resample(X_train, y_train)
+
+    sc = StandardScaler()
+    sc.fit(X_train)
+    X_train_std = sc.transform(X_train)
+    X_test_std = sc.transform(X_test)
+
+    return X, X_train_std, X_test_std, y_train, y_test
+
+
+def get_data_6(path):
+    df = pd.read_csv(path)
+
+    X = df[
+        [
+            "RBC",
+            "RDW-CV",
+            "RDW-SD",
+            "MCV",
+            "MCH",
+            "MCHC",
+            "HCT",
+            "HGB",
+            "RDW-CV/RBC",
+            "RDW-SD/RBC",
+            "MCV/RBC",
+            "MCH/RBC",
+            "MCHC/RBC",
+            "HCT/RBC",
+            "HGB/RBC",
+        ]
+    ]
+
+    y = df["label"]
+
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, random_state=37, stratify=y
+    )
+
+    undersample = RandomUnderSampler()
+    X_train, y_train = undersample.fit_resample(X_train, y_train)
 
     sc = StandardScaler()
     sc.fit(X_train)
